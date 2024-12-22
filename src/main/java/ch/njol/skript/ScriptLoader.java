@@ -980,6 +980,7 @@ public class ScriptLoader {
 				if (Skript.debug() || subNode.debug())
 					Skript.debug(SkriptColor.replaceColorChar(parser.getIndentation() + stmt.toString(null, true)));
 
+				stmt.line = subNode.getLine(); // keep the line for profiler
 				items.add(stmt);
 			} else if (subNode instanceof SectionNode) {
 				TypeHints.enterScope(); // Begin conditional type hints
@@ -991,6 +992,7 @@ public class ScriptLoader {
 				if (Skript.debug() || subNode.debug())
 					Skript.debug(SkriptColor.replaceColorChar(parser.getIndentation() + section.toString(null, true)));
 
+				section.line = subNode.getLine(); // keep the line for profiler
 				items.add(section);
 
 				// Destroy these conditional type hints

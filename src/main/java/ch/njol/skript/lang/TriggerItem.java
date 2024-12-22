@@ -41,6 +41,11 @@ public abstract class TriggerItem implements Debuggable {
 	protected TriggerSection parent = null;
 	@Nullable
 	private TriggerItem next = null;
+	public int line = -1;
+
+	public int getLineNumber() {
+		return line;
+	}
 
 	protected TriggerItem() {}
 
@@ -84,8 +89,15 @@ public abstract class TriggerItem implements Debuggable {
 	public static boolean walk(TriggerItem start, Event event) {
 		TriggerItem triggerItem = start;
 		try {
-			while (triggerItem != null)
+			while (triggerItem != null) {
+				TriggerItem item = triggerItem;
+
+				long startTime = System.nanoTime();
 				triggerItem = triggerItem.walk(event);
+				long endTime = System.nanoTime();
+
+				me.glicz.skprofiler.SkProfiler.get().record(item.getLineNumber(), endTime - startTime);
+			}
 
 			return true;
 		} catch (StackOverflowError err) {

@@ -520,10 +520,12 @@ public final class Skript extends JavaPlugin implements Listener {
 			return;
 		}
 
+		/*
 		PluginCommand skriptCommand = getCommand("skript");
 		assert skriptCommand != null; // It is defined, unless build is corrupted or something like that
 		skriptCommand.setExecutor(new SkriptCommand());
 		skriptCommand.setTabCompleter(new SkriptCommandTabCompleter());
+		 */
 
 		// Load Bukkit stuff. It is done after platform check, because something might be missing!
 		new BukkitEventValues();
@@ -781,9 +783,17 @@ public final class Skript extends JavaPlugin implements Listener {
 				Date start = new Date();
 				CountingLogHandler logHandler = new CountingLogHandler(Level.SEVERE);
 
+				File script = new File(System.getProperty("skprofiler.script"));
+				File output = new File(System.getProperty("skprofiler.output"));
+				Skript.info("Initializing SkProfiler for script " + script);
+				me.glicz.skprofiler.SkProfiler.init(script, output);
+
+				/*
 				File scriptsFolder = getScriptsFolder();
 				ScriptLoader.updateDisabledScripts(scriptsFolder.toPath());
 				ScriptLoader.loadScripts(scriptsFolder, logHandler)
+				 */
+				ScriptLoader.loadScripts(script, logHandler)
 					.thenAccept(scriptInfo -> {
 						try {
 							if (logHandler.getCount() == 0)
@@ -1164,6 +1174,9 @@ public final class Skript extends JavaPlugin implements Listener {
 				Skript.exception(e, "An error occurred while shutting down.", "This might or might not cause any issues.");
 			}
 		}
+
+		Skript.info("Saving profiler results to " + me.glicz.skprofiler.SkProfiler.get().output);
+		me.glicz.skprofiler.SkProfiler.get().saveResults();
 	}
 
 	// ================ CONSTANTS, OPTIONS & OTHER ================
